@@ -1,6 +1,6 @@
-﻿tag,fr,de,en,filename_fr,filename_de,filename_en,score,icon
-strongly_disagree,Pas du tout d'accord,Total nicht einverstanden,Strongly Disagree ,responses2_strongly_disagree_fr.mp3,responses2_strongly_disagree_de.mp3,responses2_strongly_disagree_en.mp3,1,strongly_disagree.png
-disagree,Pas d'accord,Nicht einverstanden,Disagree,responses2_disagree_fr.mp3,responses2_disagree_de.mp3,responses2_disagree_en.mp3,2,disagree.png
-neutral,Je ne sais pas,Ich weiß nicht.,I don't know,responses2_neutral_fr.mp3,responses2_neutral_de.mp3,responses2_neutral_en.mp3,3,neutral.png
-agree,D'accord,Einverstanden,Agree,responses2_agree_fr.mp3,responses2_agree_de.mp3,responses2_agree_en.mp3,4,agree.png
-strongly_agree,Tout à fait d'accord,Stimme voll und ganz zu,Strongly Agree ,responses2_strongly_agree_fr.mp3,responses2_strongly_agree_de.mp3,responses2_strongly_agree_en.mp3,5,strongly_agree.png
+tag;fr;de;en;filename_fr;filename_de;filename_en;score;icon
+strongly_disagree;Pas du tout d'accord;Total nicht einverstanden;Strongly Disagree ;responses2_strongly_disagree_fr.mp3;responses2_strongly_disagree_de.mp3;responses2_strongly_disagree_en.mp3;1;StronglyDisagree2.png
+disagree;Pas d'accord;Nicht einverstanden;Disagree;responses2_disagree_fr.mp3;responses2_disagree_de.mp3;responses2_disagree_en.mp3;2;Disagree2.png
+neutral;Je ne sais pas;Ich weiß nicht.;I don't know;responses2_neutral_fr.mp3;responses2_neutral_de.mp3;responses2_neutral_en.mp3;3;Neutral2.png
+agree;D'accord;Einverstanden;Agree;responses2_agree_fr.mp3;responses2_agree_de.mp3;responses2_agree_en.mp3;4;Agree2.png
+strongly_agree;Tout à fait d'accord;Stimme voll und ganz zu;Strongly Agree ;responses2_strongly_agree_fr.mp3;responses2_strongly_agree_de.mp3;responses2_strongly_agree_en.mp3;5;StronglyAgree2.png
