@@ -234,6 +234,14 @@ class Gui:
         )
         self.question.pack()
 
+    def show_survey(self):
+        self.intro_frame.pack_forget()
+        self.survey_frame.pack(fill=tk.BOTH, expand=True)
+
+    def show_intro(self):
+        self.survey_frame.pack_forget()
+        self.intro_frame.pack(fill=tk.BOTH, expand=True)
+
     def finish(self):
         self.question['text'] = "You have finished"
         self.buttons_frame.pack_forget()

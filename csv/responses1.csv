@@ -1,4 +1,4 @@
-tag;fr;de;en;filename_fr;filename_de;filename_en;icons;score
-not_true;Pas vrai;Nicht wahr;Not True;responses1_not_true_fr.mp3;responses1_not_true_de.mp3;responses1_not_true_en.mp3;NotAtAll.png;0
-sometimes_true;Parfois vrai;Manchmal Wahr;Sometimes True;responses1_sometimes_true_fr.mp3;responses1_sometimes_true_de.mp3;responses1_sometimes_true_en.mp3;Little.png;1
-often_true;Souvent vrai;Oft wahr;Often True;responses1_often_true_fr.mp3;responses1_often_true_de.mp3;responses1_often_true_en.mp3;Very.png;2
+tag,fr,de,en,filename_fr,filename_de,filename_en,icon,score
+not_true,Pas vrai,Nicht wahr,Not True,responses1_not_true_fr.mp3,responses1_not_true_de.mp3,responses1_not_true_en.mp3,NotAtAll.png,0
+sometimes_true,Parfois vrai,Manchmal Wahr,Sometimes True,responses1_sometimes_true_fr.mp3,responses1_sometimes_true_de.mp3,responses1_sometimes_true_en.mp3,Little.png,1
+often_true,Souvent vrai,Oft wahr,Often True,responses1_often_true_fr.mp3,responses1_often_true_de.mp3,responses1_often_true_en.mp3,Very.png,2
