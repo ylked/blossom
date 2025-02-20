@@ -59,7 +59,8 @@ class CsvFile:
                     row['filename_de'],
                     row['filename_fr'],
                     row['score'] if with_score else None,
-                    row['icon'] if with_icons else None
+                    row['icon'] if with_icons else None,
+                    row['negative'].strip() == '1' if not with_score else None,
                 ) for row in reader
             ]
 
@@ -135,6 +136,7 @@ class GenericCsvRow:
     audio_fr: str
     score: int | None
     icon: str | None
+    negative: bool | None
 
     def _get_attribute(self, lang: Language, attribute_name: str):
         attr_name = attribute_name + '_' + lang.value
@@ -154,6 +156,7 @@ class SimpleRow:
     audio: str
     score: int | None
     icon: str | None
+    negative: bool | None
 
     def from_row(row: GenericCsvRow, lang: Language):
         return SimpleRow(
@@ -161,7 +164,8 @@ class SimpleRow:
             row.text(lang),
             row.audio(lang),
             row.score,
-            row.icon
+            row.icon,
+            row.negative
         )
 
 
@@ -240,12 +244,6 @@ class Survey:
 
 class Gui:
     def __init__(self, survey: Survey = None, user_answers: UserAnswersCsvFile = None):
-        if survey.answers.has_icons():
-            for ans in survey.answers:
-                assert ans.icon is not None
-
-        # self.user_answers_file = user_answers
-        # self.survey: Survey = survey
         self.root: tk.Tk = tk.Tk()
         self.root.geometry("1400x600")
         self.current_question = ""
@@ -492,7 +490,10 @@ class Gui:
                 self.current_question.tag,
                 answer.tag)
             )
-            self.user_answers.score += int(answer.score)
+            if self.current_question.negative:
+                self.user_answers.score -= int(answer.score)
+            else:
+                self.user_answers.score += int(answer.score)
             self.current_question = next(self.survey.questions)
             self.question_label['text'] = self.current_question.text
             self.play_sound(self.current_question.audio)
@@ -505,13 +506,5 @@ class Gui:
         self.root.mainloop()
 
 
-questions = Questions(CsvFile('csv/questionnaire2.csv'))
-answers = PossibleAnswers(CsvFile('csv/responses2.csv',
-                                  with_score=True, with_icons=True))
-
-user_answers = UserAnswersCsvFile('answers/answer1.csv', questions.all_rows())
-survey = Survey(questions, answers)
-survey.set_lang(Language.FR)
-
-gui = Gui(survey, user_answers)
+gui = Gui()
 gui.run()
