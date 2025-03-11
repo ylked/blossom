@@ -19,14 +19,22 @@ ANSWERS_DIRECTORY = 'answers/'
 ICONS_SIZE = 100
 
 SURVEYS_FILENAMES = {
-    'Questionnaire 1': ('questionnaire1.csv', 'responses1.csv', 'answers1.csv'),
-    'Questionnaire 2': ('questionnaire2.csv', 'responses2.csv', 'answers2.csv'),
+    'Questionnaire 1': (
+        'questionnaire1.csv',
+        'responses1.csv',
+        'answers1.csv'
+    ),
+    'Questionnaire 2': (
+        'questionnaire2.csv',
+        'responses2.csv',
+        'answers2.csv'
+    ),
 }
 
 
 class Language(Enum):
     FR = 'fr'
-    EN = 'en'
+    # EN = 'en'
     DE = 'de'
 
 
@@ -172,15 +180,11 @@ class SimpleRow:
 class Content:
     def __init__(self, csv: CsvFile):
         self._csv = csv
-        self._lang = Language.EN
+        self._lang = Language.DE
         self.reset_iterator()
 
     def set_lang(self, lang: Language):
         self._lang = lang
-
-    # def __iter__(self):
-    #     for row in self._csv.rows:
-    #         yield SimpleRow.from_row(row, self._lang)
 
     def __iter__(self):
         return self
@@ -243,13 +247,20 @@ class Survey:
 
 
 class Gui:
-    def __init__(self, survey: Survey = None, user_answers: UserAnswersCsvFile = None):
+    def __init__(
+            self,
+            survey: Survey = None,
+            user_answers: UserAnswersCsvFile = None
+    ):
         self.root: tk.Tk = tk.Tk()
         self.root.geometry("1400x600")
+        self.root.title("Fragebogen")
         self.current_question = ""
+        self.sound = None
 
         self.intro_frame = tk.Frame(self.root)
         self.survey_frame = tk.Frame(self.root)
+        self.start_frame = tk.Frame(self.root)
 
         # self._build_survey_frame(self.survey_frame)
         self._build_intro_frame(self.intro_frame)
@@ -259,15 +270,23 @@ class Gui:
 
     def _build_survey_frame(self, root):
         questions = Questions(
-            CsvFile(CSV_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][0]))
-        answers = PossibleAnswers(CsvFile(CSV_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][1],
-                                          with_score=True, with_icons=True))
+            CsvFile(
+                CSV_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][0]
+            )
+        )
+        answers = PossibleAnswers(
+            CsvFile(
+                CSV_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][1],
+                with_score=True, with_icons=True
+            )
+        )
         self.user_answers_file = UserAnswersCsvFile(
             ANSWERS_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][2],
             questions.all_rows()
         )
         self.survey = Survey(questions, answers)
         self.survey.set_lang(Language(self.selected_lang.get()))
+        self.preselection = None
 
         self.question_frame = tk.Frame(
             root,
@@ -281,16 +300,35 @@ class Gui:
             padx='30px',
             pady='50px',
         )
+        self.continue_frame = tk.Frame(
+            root,
+        )
         self.question_frame.pack(
             fill=tk.X,
             pady=40,
             padx=60,
         )
 
+        self.answers_audio = [ans.audio for ans in self.survey.answers]
+
         # spacer
         tk.Frame(root).pack(fill=tk.BOTH, expand=True)
 
         self.buttons_frame.pack(fill=tk.X, expand=True)
+
+        self.continue_frame.pack(fill=tk.X, expand=True, padx=40, pady=30)
+        self.continue_icon = Icon(ICONS_DIRECTORY + 'check.png')
+
+        self.continue_btn = tk.Button(self.continue_frame,
+                                      text='Continue',
+                                      padx=10,
+                                      pady=10,
+                                      state=tk.DISABLED,
+                                      command=lambda: self.validate(
+                                          self.preselection),
+                                      image=self.continue_icon.img,
+                                      )
+        self.continue_btn.pack(side=tk.RIGHT)
 
         self.survey.answers.reset_iterator()
         self.icons = [
@@ -303,9 +341,9 @@ class Gui:
             tk.Button(
                 self.buttons_frame,
                 text=ans.text,
-                command=lambda ans=ans: self.validate(ans),
-                bd=0,
-                highlightthickness=0,
+                command=lambda ans=ans, i=i: self.preselect(ans, i),
+                # bd=0,
+                # highlightthickness=0,
                 takefocus=0,
                 padx=30,
                 pady=20,
@@ -349,6 +387,20 @@ class Gui:
 
         pygame.mixer.init()
         self.play_sound(q.audio)
+
+    def _build_start_frame(self, root):
+        self.start_icon = Icon(ICONS_DIRECTORY + 'start.png')
+        start_frame = tk.Frame(
+            root,
+            padx=50,
+            pady=50
+        )
+        start_frame.pack(fill=tk.BOTH, expand=True)
+        tk.Button(
+            start_frame,
+            image=self.start_icon.img,
+            command=lambda: self.start_survey()
+        ).pack(fill=tk.BOTH, expand=True)
 
     def _build_intro_frame(self, root):
         form_frame = tk.Frame(
@@ -398,6 +450,13 @@ class Gui:
         self.gender = tk.StringVar()
         self.narrative_type = tk.StringVar()
         self.questionnaire = tk.StringVar()
+
+        self.selected_lang.set('de')
+        self.participant_id.set('0')
+        self.age.set(0)
+        self.gender.set('MALE')
+        self.narrative_type.set('NEUTRAL')
+        self.questionnaire.set('Questionnaire 1')
 
         lang_select = ttk.Combobox(
             form_frame,
@@ -449,7 +508,7 @@ class Gui:
         start_btn = tk.Button(
             start_button_frame,
             text='Start',
-            command=lambda: self.start_survey(),
+            command=lambda: self.show_start_page(),
             bd=0,
             highlightthickness=0,
             takefocus=0,
@@ -461,9 +520,13 @@ class Gui:
 
         start_btn.pack()
 
-    def start_survey(self):
+    def show_start_page(self):
         self.intro_frame.pack_forget()
-        # self.set_lang(Language(self.selected_lang.get()))
+        self._build_start_frame(self.start_frame)
+        self.start_frame.pack(fill=tk.BOTH, expand=True)
+
+    def start_survey(self):
+        self.start_frame.pack_forget()
         self._build_survey_frame(self.survey_frame)
         self.survey_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -473,18 +536,38 @@ class Gui:
 
     def finish(self):
         self.user_answers_file.save_result(self.user_answers)
-        self.question_label['text'] = "You have finished"
+        self.question_label['text'] = \
+        "Du bist fertig. Danke, dass du den Fragebogen ausgefüllt hast."
         self.buttons_frame.pack_forget()
+        self.continue_frame.pack_forget()
 
     def set_lang(self, lang: Language):
         self.survey.set_lang(lang)
 
     def play_sound(self, filename):
-        s = pygame.mixer.Sound(AUDIO_DIRECTORY + filename)
-        s.play()
+        if self.sound:
+            self.sound.stop()
+        self.sound = pygame.mixer.Sound(AUDIO_DIRECTORY + filename)
+        self.sound.play()
+
+    def clear_bg(self):
+        for b in self.buttons:
+            b.config(
+                bg=b.master["bg"],
+                highlightbackground=b.master["bg"],
+                activebackground=b.master["bg"]
+            )
+
+    def preselect(self, ans, i):
+        self.clear_bg()
+        self.preselection = ans
+        self.continue_btn['state'] = tk.NORMAL
+        self.buttons[i].config(highlightbackground="green")
+        self.play_sound(self.answers_audio[i])
 
     def validate(self, answer: SimpleRow):
-        print(f"answered : {answer.text} (score={answer.score})")
+        self.clear_bg()
+        self.continue_btn['state'] = tk.DISABLED
         try:
             self.user_answers.add_result(SingleQuestionAnswer(
                 self.current_question.tag,
@@ -506,5 +589,5 @@ class Gui:
         self.root.mainloop()
 
 
-gui = Gui()
-gui.run()
+if __name__ == "__main__":
+    Gui().run()
