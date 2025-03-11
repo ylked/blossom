@@ -247,11 +247,7 @@ class Survey:
 
 
 class Gui:
-    def __init__(
-            self,
-            survey: Survey = None,
-            user_answers: UserAnswersCsvFile = None
-    ):
+    def __init__(self):
         self.root: tk.Tk = tk.Tk()
         self.root.geometry("1400x600")
         self.root.title("Fragebogen")
@@ -262,11 +258,13 @@ class Gui:
         self.survey_frame = tk.Frame(self.root)
         self.start_frame = tk.Frame(self.root)
 
-        # self._build_survey_frame(self.survey_frame)
         self._build_intro_frame(self.intro_frame)
 
-        # self.show_survey()
         self.show_intro()
+
+    def create_empty_csv_file(self, filename: str):
+        with open(filename, 'w') as f:
+            f.write("")
 
     def _build_survey_frame(self, root):
         questions = Questions(
@@ -280,8 +278,13 @@ class Gui:
                 with_score=True, with_icons=True
             )
         )
+        user_answers_fn = ANSWERS_DIRECTORY + \
+            SURVEYS_FILENAMES[self.questionnaire.get()][2]
+        if not os.path.exists(user_answers_fn):
+            self.create_empty_csv_file(user_answers_fn)
+
         self.user_answers_file = UserAnswersCsvFile(
-            ANSWERS_DIRECTORY + SURVEYS_FILENAMES[self.questionnaire.get()][2],
+            user_answers_fn,
             questions.all_rows()
         )
         self.survey = Survey(questions, answers)
@@ -537,7 +540,7 @@ class Gui:
     def finish(self):
         self.user_answers_file.save_result(self.user_answers)
         self.question_label['text'] = \
-        "Du bist fertig. Danke, dass du den Fragebogen ausgefüllt hast."
+            "Du bist fertig. Danke, dass du den Fragebogen ausgefüllt hast."
         self.buttons_frame.pack_forget()
         self.continue_frame.pack_forget()
 
