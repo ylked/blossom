@@ -6,6 +6,10 @@
 
 - Python 3.10
 - pip
+- Tkinter
+
+> [!NOTE]
+> This app has only been tested on Linux and macOS. It may work on Windows, but there are no guarantees.
 
 ### Auto translation and text-to-speech
 
