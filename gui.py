@@ -263,6 +263,7 @@ class Gui:
         self.show_intro()
 
     def create_empty_csv_file(self, filename: str):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, 'w') as f:
             f.write("")
 
