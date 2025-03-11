@@ -11,7 +11,7 @@
 > [!NOTE]
 > This app has only been tested on Linux and macOS. It may work on Windows, but there are no guarantees.
 
-### Auto translation and text-to-speech
+### Auto translation and text-to-speech (Optional)
 
 Translation and TTS both use OpenAI API to work. A valid API key with enough credits is required to use those 
 scripts. The GUI questionnaire app or the robot voice app **do not** need it since they do not use OpenAI API.
@@ -33,7 +33,7 @@ OPENAI_API_KEY=insert your key here
 
 Clone the repository in the directory of your choice and navigate to it
 ```sh
-git clone git@github.com:ylked/blossom.git`
+git clone git@github.com:ylked/blossom.git
 cd blossom
 ```
 
