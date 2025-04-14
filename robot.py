@@ -2,7 +2,7 @@ import csv
 import sys
 import pygame
 
-VALID_LANG = ('fr', 'de')
+LANG = 'de'
 VALID_NARRATIVE = ('sad', 'neutral')
 
 CSV_DIRECTORY = 'csv/'
@@ -45,7 +45,7 @@ def main():
     rows_iterator = load_csv(filename)
 
     for row in rows_iterator:
-        fn = get_filename(row, 'de')
+        fn = get_filename(row, LANG)
         print(fn)
         pygame.mixer.Sound(fn).play()
 
